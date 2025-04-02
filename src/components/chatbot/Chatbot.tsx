@@ -14,8 +14,19 @@ type Message = {
   timestamp: Date;
 };
 
+// Define response type structure
+type ResponseContent = {
+  greeting: string;
+  attendance: string;
+  employee: string;
+  team: string;
+  blacklist: string;
+  settings: string;
+  fallback: string;
+};
+
 // Mock responses for the chatbot
-const mockResponses: { [key: string]: string } = {
+const mockResponses: { [key: string]: ResponseContent } = {
   en: {
     greeting: "Hello! I'm your NLT Assistant. How can I help you today?",
     attendance: "To mark attendance, go to the Attendance page, select the date and team, then you can mark each employee as present, late, or absent.",

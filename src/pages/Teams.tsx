@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -30,6 +29,23 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+// Define the Team and Employee types for better type safety
+type Employee = {
+  id: string;
+  name: string;
+  avatar: string;
+};
+
+type Team = {
+  id: string;
+  name: string;
+  description: string;
+  leader: Employee;
+  coLeader: Employee | null;
+  memberCount: number;
+  status: string;
+};
 
 // Mock data for teams
 const mockTeams = [
@@ -132,20 +148,18 @@ const mockEmployees = [
 const Teams = () => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
-  const [teamList, setTeamList] = useState(mockTeams);
+  const [teamList, setTeamList] = useState<Team[]>(mockTeams);
   const [openDialog, setOpenDialog] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Team>({
     id: '',
     name: '',
     description: '',
     leader: {
       id: '',
-      name: ''
+      name: '',
+      avatar: '',
     },
-    coLeader: {
-      id: '',
-      name: ''
-    },
+    coLeader: null,
     memberCount: 0,
     status: 'active',
   });
@@ -169,12 +183,10 @@ const Teams = () => {
       description: '',
       leader: {
         id: '',
-        name: ''
+        name: '',
+        avatar: '',
       },
-      coLeader: {
-        id: '',
-        name: ''
-      },
+      coLeader: null,
       memberCount: 0,
       status: 'active',
     });
@@ -182,10 +194,10 @@ const Teams = () => {
     setOpenDialog(true);
   };
 
-  const handleEditTeam = (team: any) => {
+  const handleEditTeam = (team: Team) => {
     setFormData({
       ...team,
-      coLeader: team.coLeader || { id: '', name: '' },
+      coLeader: team.coLeader || null,
     });
     setIsEditing(true);
     setOpenDialog(true);
@@ -216,11 +228,11 @@ const Teams = () => {
         const selectedEmployee = mockEmployees.find(emp => emp.id === value);
         setFormData({
           ...formData,
-          coLeader: {
-            id: selectedEmployee?.id || '',
-            name: selectedEmployee?.name || '',
-            avatar: selectedEmployee?.avatar || '',
-          },
+          coLeader: selectedEmployee ? {
+            id: selectedEmployee.id,
+            name: selectedEmployee.name,
+            avatar: selectedEmployee.avatar,
+          } : null,
         });
       }
     } else {
@@ -241,7 +253,7 @@ const Teams = () => {
         )
       );
     } else {
-      const newTeam = {
+      const newTeam: Team = {
         ...formData,
         id: Date.now().toString(),
         memberCount: 1, // Starting with leader only
